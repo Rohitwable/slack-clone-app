@@ -4,6 +4,7 @@ import { graphqlExpress, graphiqlExpress } from 'apollo-server-express';
 import { makeExecutableSchema } from 'graphql-tools';
 import typeDefs from './schema';
 import resolvers from './resolver';
+import models from './models';
 const graphqlEndpoint = '/graphql';
 const app = express();
 
@@ -12,7 +13,8 @@ const schema = makeExecutableSchema({
     resolvers
 })
 app.use(graphqlEndpoint, bodyParser.json(), graphqlExpress({ schema: schema }));
-app.use('/graphiql', graphiqlExpress({ endpointURL: graphqlEndpoint }))
-app.listen(8081, () => {
-    console.log(`Server is running on port 8081`);
+app.use('/graphiql', graphiqlExpress({ endpointURL: graphqlEndpoint }));
+
+models.sequelize.sync().then(()=>{
+    app.listen(8081)
 });
